@@ -11,7 +11,7 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - eazybank-network
+      - pmbank-network
 
   loans:
     image: mipatrik/loans:latest
@@ -22,7 +22,7 @@ services:
     ports:
       - "8090:8090"
     networks:
-      - eazybank-network
+      - pmbank-network
 
   cards:
     image: mipatrik/cards:latest
@@ -33,7 +33,7 @@ services:
     ports:
       - "9010:9010"
     networks:
-      - eazybank-network
+      - pmbank-network
 
 networks:
   eazybank-network:
