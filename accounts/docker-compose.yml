@@ -36,4 +36,4 @@ services:
       - pmbank-network
 
 networks:
-  eazybank-network:
+  pmbank-network:
