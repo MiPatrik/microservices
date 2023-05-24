@@ -1,7 +1,6 @@
 version: "3.8"
 
 services:
-
   configserver:
     image: mipatrik/configserver:latest
     deploy:
@@ -12,6 +11,27 @@ services:
       - "8071:8071"
     networks:
       - pmbank-network
+
+  eurekaserver:
+    image: mipatrik/eurekaserver:latest
+    ports:
+      - "8070:8070"
+    networks:
+      - pmbank-network
+    depends_on:
+      - configserver
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 15s
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          memory: 700m
+    environment:
+      SPRING_PROFILES_ACTIVE: default
+      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
 
   accounts:
     image: mipatrik/accounts:latest
@@ -30,9 +50,11 @@ services:
       - pmbank-network
     depends_on:
       - configserver
+      - eurekaserver
     environment:
       SPRING_PROFILES_ACTIVE: default
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/
 
   loans:
     image: mipatrik/loans:latest
@@ -51,9 +73,11 @@ services:
       - pmbank-network
     depends_on:
       - configserver
+      - eurekaserver
     environment:
       SPRING_PROFILES_ACTIVE: default
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/
 
   cards:
     image: mipatrik/cards:latest
@@ -72,9 +96,11 @@ services:
       - pmbank-network
     depends_on:
       - configserver
+      - eurekaserver
     environment:
       SPRING_PROFILES_ACTIVE: default
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/
 
 networks:
   pmbank-network:
