@@ -41,7 +41,7 @@ services:
           memory: 700m
       restart_policy:
         condition: on-failure
-        delay: 5s
+        delay: 30s
         max_attempts: 3
         window: 120s
     ports:
@@ -56,6 +56,30 @@ services:
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/
 
+#   Second instance of accounst microservice
+#  accounts1:
+#    image: mipatrik/accounts:latest
+#    deploy:
+#      resources:
+#        limits:
+#          memory: 700m
+#      restart_policy:
+#        condition: on-failure
+#        delay: 30s
+#        max_attempts: 3
+#        window: 120s
+#    ports:
+#      - "8081:8080"
+#    networks:
+#      - pmbank-network
+#    depends_on:
+#      - configserver
+#      - eurekaserver
+#    environment:
+#      SPRING_PROFILES_ACTIVE: default
+#      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+#      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/
+
   loans:
     image: mipatrik/loans:latest
     deploy:
@@ -64,7 +88,7 @@ services:
           memory: 700m
       restart_policy:
         condition: on-failure
-        delay: 5s
+        delay: 30s
         max_attempts: 3
         window: 120s
     ports:
@@ -87,7 +111,7 @@ services:
           memory: 700m
       restart_policy:
         condition: on-failure
-        delay: 5s
+        delay: 30s
         max_attempts: 3
         window: 120s
     ports:
