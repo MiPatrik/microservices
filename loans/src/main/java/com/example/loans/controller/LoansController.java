@@ -1,9 +1,10 @@
 package com.example.loans.controller;
 
-import java.util.List;
-
 import com.example.loans.config.LoansServiceConfig;
+import com.example.loans.model.Customer;
+import com.example.loans.model.Loans;
 import com.example.loans.model.Properties;
+import com.example.loans.repository.LoansRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -12,9 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.loans.model.Customer;
-import com.example.loans.model.Loans;
-import com.example.loans.repository.LoansRepository;
+import java.util.List;
 
 @RestController
 public class LoansController {
@@ -29,6 +28,7 @@ public class LoansController {
 
     @PostMapping("/myLoans")
     public List<Loans> getLoansDetails(@RequestBody Customer customer) {
+        System.out.println("Invoking Loans Microservice");
         return loansRepository.findByCustomerIdOrderByStartDtDesc(customer.getCustomerId());
     }
 
