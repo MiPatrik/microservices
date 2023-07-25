@@ -11,17 +11,16 @@ services:
     ports:
       - "8071:8071"
     networks:
-      - pmbank-network
+      - pm-bank
 
   eurekaserver:
-    image: eazybytes/eurekaserver:latest
+    image: mipatrik/eurekaserver:latest
     ports:
       - "8070:8070"
     networks:
-      - pmbank-network
+      - pm-bank
     depends_on:
       - configserver
-      - eurekaserver
     deploy:
       restart_policy:
         condition: on-failure
@@ -32,103 +31,108 @@ services:
         limits:
           memory: 700m
     environment:
+      SPRING_APPLICATION_NAME: eurekaserver
       SPRING_PROFILES_ACTIVE: prod
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
 
   accounts:
     image: mipatrik/accounts:latest
-    deploy:
-      resources:
-        limits:
-          memory: 700m
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-        window: 120s
     ports:
       - "8080:8080"
     networks:
-      - pmbank-network
+      - pm-bank
     depends_on:
       - configserver
       - eurekaserver
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          memory: 700m
     environment:
+      SPRING_APPLICATION_NAME: accounts
       SPRING_PROFILES_ACTIVE: prod
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/
 
   loans:
     image: mipatrik/loans:latest
-    deploy:
-      resources:
-        limits:
-          memory: 700m
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-        window: 120s
     ports:
       - "8090:8090"
     networks:
-      - pmbank-network
+      - pm-bank
     depends_on:
       - configserver
       - eurekaserver
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 3
+        window: 120s
+      resources:
+        limits:
+          memory: 700m
     environment:
+      SPRING_APPLICATION_NAME: loans
       SPRING_PROFILES_ACTIVE: prod
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/
 
   cards:
     image: mipatrik/cards:latest
-    deploy:
-      resources:
-        limits:
-          memory: 700m
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-        window: 120s
     ports:
-      - "9010:9010"
+      - "9000:9000"
     networks:
-      - pmbank-network
+      - pm-bank
     depends_on:
       - configserver
       - eurekaserver
-    environment:
-      SPRING_PROFILES_ACTIVE: prod
-      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka
-
-  gatewayserver:
-    image: mipatrik/gatewayserver:latest
     deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 3
+        window: 120s
       resources:
         limits:
           memory: 700m
-      restart_policy:
-        condition: on-failure
-        delay: 45s
-        max_attempts: 3
-        window: 180s
+    environment:
+      SPRING_APPLICATION_NAME: cards
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/
+
+  gatewayserver:
+    image: mipatrik/gatewayserver:latest
     ports:
       - "8072:8072"
+    networks:
+      - pm-bank
     depends_on:
       - configserver
       - eurekaserver
       - cards
       - loans
       - accounts
-    networks:
-      - pmbank-network
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 45s
+        max_attempts: 3
+        window: 180s
+      resources:
+        limits:
+          memory: 700m
     environment:
+      SPRING_APPLICATION_NAME: gatewayserver
       SPRING_PROFILES_ACTIVE: prod
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/
 
 networks:
-  pmbank-network:
+  pm-bank:
