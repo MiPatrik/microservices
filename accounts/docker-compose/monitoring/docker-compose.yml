@@ -2,6 +2,27 @@ version: "3.8"
 
 services:
 
+  grafana:
+    image: "grafana/grafana:latest"
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=password
+    networks:
+      - pmbank
+    depends_on:
+      - prometheus
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - pmbank
+
   zipkin:
     image: openzipkin/zipkin
     mem_limit: 700m
@@ -9,7 +30,7 @@ services:
       - "9411:9411"
     networks:
       - pmbank
-  
+
   configserver:
     image: mipatrik/configserver:latest
     mem_limit: 700m
@@ -23,7 +44,7 @@ services:
       SPRING_PROFILES_ACTIVE: dev
       # SPRING_ZIPKIN_BASEURL: http://zipkin:9411/
       MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
-  
+
   eurekaserver:
     image: mipatrik/eurekaserver:latest
     mem_limit: 700m
@@ -45,7 +66,7 @@ services:
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8071/
       # SPRING_ZIPKIN_BASEURL: http://zipkin:9411/
       MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
-  
+
   accounts:
     image: mipatrik/accounts:latest
     mem_limit: 700m
@@ -69,7 +90,7 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/
       # SPRING_ZIPKIN_BASEURL: http://zipkin:9411/
       MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
-  
+
   loans:
     image: mipatrik/loans:latest
     mem_limit: 700m
@@ -93,7 +114,7 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/
       # SPRING_ZIPKIN_BASEURL: http://zipkin:9411/
       MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
-  
+
   cards:
     image: mipatrik/cards:latest
     mem_limit: 700m
@@ -117,7 +138,7 @@ services:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka/
       # SPRING_ZIPKIN_BASEURL: http://zipkin:9411/
       MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
-  
+
   gatewayserver:
     image: mipatrik/gatewayserver:latest
     mem_limit: 700m

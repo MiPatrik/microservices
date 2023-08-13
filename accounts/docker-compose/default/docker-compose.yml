@@ -98,7 +98,7 @@ services:
     image: mipatrik/cards:latest
     mem_limit: 700m
     ports:
-      - "9000:9000"
+      - "9010:9010"
     networks:
       - pmbank
     depends_on:
